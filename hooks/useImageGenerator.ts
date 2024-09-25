@@ -47,11 +47,11 @@ export const useImageGenerator = () => {
         setInfo("Starting image generation...");
 
         // TODO: Uncomment this when we done with dev
-        const modelEndpoint = isProUser
-          ? "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions"
-          : "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
-        // const modelEndpoint =
-        //   "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
+        // const modelEndpoint = isProUser
+        //   ? "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions"
+        //   : "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
+        const modelEndpoint =
+          "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
 
         const response = await fetch(modelEndpoint, {
           method: "POST",
