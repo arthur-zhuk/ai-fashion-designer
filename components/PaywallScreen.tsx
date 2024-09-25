@@ -15,7 +15,7 @@ import { useRouter } from "expo-router";
 export default function PaywallScreen() {
   const { currentOffering, isLoading, error, purchasePackage } =
     useRevenueCat();
-  const [selectedPlan, setSelectedPlan] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const router = useRouter();
   const colorScheme = useColorScheme();
 
@@ -98,7 +98,7 @@ export default function PaywallScreen() {
                   selectedPlan === pkg.identifier && styles.selectedText,
                 ]}
               >
-                {pkg.identifier}
+                {pkg.product.title} {/* Displaying the product title */}
               </Text>
               <Text
                 style={[

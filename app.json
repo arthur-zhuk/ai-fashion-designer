@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "your-app-scheme",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -13,14 +13,19 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ug02fast.dressgenerator"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ug02fast.dressgenerator"
+      "package": "com.ug02fast.dressgenerator",
+      "permissions": [
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -39,7 +44,8 @@
       },
       "eas": {
         "projectId": "5cea1edb-815a-429c-86b1-bd974312a880"
-      }
+      },
+      "revenueCatApiKey": "goog_qlwflzLgzwgEBWHeUTuOaGZGRcN"
     }
   }
 }

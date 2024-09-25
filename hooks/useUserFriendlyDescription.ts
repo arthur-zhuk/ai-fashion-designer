@@ -4,6 +4,7 @@ import OpenAI from "openai";
 const openAiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 const openai = new OpenAI({
   apiKey: openAiKey,
+  dangerouslyAllowBrowser: true,
 });
 
 export const useUserFriendlyDescription = () => {

@@ -1,0 +1,61 @@
+export const GARMENT_STYLES = [
+  "Dress",
+  "Shirt",
+  "Pants",
+  "Jacket",
+  "Skirt",
+  "Blouse",
+  "Coat",
+  "Sweater",
+  "Shorts",
+  "T-Shirt",
+  "Leotard",
+  "Tank Top",
+  "Sweatshirt",
+  "Hoodie",
+  "Jumpsuit",
+  "Romper",
+  "Bodysuit",
+  "Kimono",
+  "Tuxedo",
+];
+
+export const COLORS = [
+  "Red",
+  "Blue",
+  "Green",
+  "Yellow",
+  "Purple",
+  "Black",
+  "White",
+  "Orange",
+  "Brown",
+];
+
+export const IMAGE_STYLES = [
+  "Vintage",
+  "Modern",
+  "Casual",
+  "Formal",
+  "Sporty",
+  "Bohemian",
+  "Minimalist",
+  "Abstract",
+  "Elegant",
+  "Streetwear",
+  "Sketch",
+  "Airbrush",
+];
+
+export const PATTERNS = [
+  "Striped",
+  "Polka Dot",
+  "Floral",
+  "Paisley",
+  "Plaid",
+  "Houndstooth",
+  "Geometric",
+  "Animal Print",
+  "Camouflage",
+  "Chevron",
+];

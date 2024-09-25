@@ -7,14 +7,17 @@ import {
   ScrollView,
   SafeAreaView,
   Image,
+  Modal,
+  Pressable,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
-import { Modal, Pressable } from "react-native";
 import { useState } from "react";
 import { Animated } from "react-native";
 
 const AnimatedImage = ({ source, style, onPress }) => {
-  const scaleValue = new Animated.Value(1);
+  const scaleValue = React.useRef(new Animated.Value(1)).current;
 
   React.useEffect(() => {
     const pulseAnimation = Animated.sequence([
@@ -31,7 +34,7 @@ const AnimatedImage = ({ source, style, onPress }) => {
     ]);
 
     Animated.loop(pulseAnimation).start();
-  }, []);
+  }, [scaleValue]);
 
   const handlePressIn = () => {
     Animated.spring(scaleValue, {
@@ -91,7 +94,7 @@ export default function UpgradeScreen() {
             <Text style={styles.closeButtonText}>✕</Text>
           </TouchableOpacity>
 
-          <Text style={styles.title}>Upgrade to Pro</Text>
+          <Text style={styles.title}>Elevate Your Style</Text>
 
           <View style={styles.imageContainer}>
             <AnimatedImage
@@ -110,27 +113,16 @@ export default function UpgradeScreen() {
             />
           </View>
 
-          <Text style={styles.feature}>🖼️ Higher Quality Images</Text>
+          <Text style={styles.feature}>🖼️ Premium Quality Designs</Text>
           <Text style={styles.description}>
-            Unlock stunning, high-resolution dress designs that bring your
-            vision to life with incredible detail.
+            Unlock stunning, high-resolution garment designs that bring your
+            fashion vision to life with exquisite detail.
           </Text>
 
-          {/* <Text style={styles.feature}>🚀 Faster Generation</Text>
+          <Text style={styles.feature}>🎨 Exclusive Styles & Patterns</Text>
           <Text style={styles.description}>
-            Create your dream dresses in seconds with our enhanced AI-powered
-            generation engine.
-          </Text> */}
-
-          {/* <Text style={styles.feature}>💾 Unlimited Saves</Text>
-          <Text style={styles.description}>
-            Keep all your favorite designs forever with unlimited cloud storage.
-          </Text> */}
-
-          <Text style={styles.feature}>🎨 Exclusive Styles</Text>
-          <Text style={styles.description}>
-            Access a premium collection of styles and patterns only available to
-            Pro users.
+            Access a curated collection of avant-garde styles and patterns, from
+            haute couture to street chic, available only to Pro users.
           </Text>
 
           <Text style={styles.pricing}>
@@ -141,9 +133,7 @@ export default function UpgradeScreen() {
             style={styles.upgradeButton}
             onPress={handleUpgrade}
           >
-            <Text style={styles.upgradeButtonText}>
-              Give me better dresses now!
-            </Text>
+            <Text style={styles.upgradeButtonText}>Upgrade to Fashion Pro</Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
@@ -173,84 +163,89 @@ export default function UpgradeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#1A1A1A",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   scrollContent: {
-    padding: 20,
+    padding: 24,
     paddingTop: 60,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontSize: 32,
+    fontWeight: "300",
+    marginBottom: 24,
     textAlign: "center",
-  },
-  topUpgradeButton: {
-    backgroundColor: "#FFD700",
-    padding: 15,
-    borderRadius: 25,
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  topUpgradeButtonText: {
-    color: "#000",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  feature: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    marginBottom: 15,
-    lineHeight: 22,
-  },
-  pricing: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 30,
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  upgradeButton: {
-    backgroundColor: "#FFD700",
-    padding: 15,
-    borderRadius: 25,
-    alignItems: "center",
-    marginTop: 20,
-  },
-  upgradeButtonText: {
-    color: "#000",
-    fontSize: 18,
-    fontWeight: "bold",
+    color: "#FFFFFF",
+    fontFamily: "Helvetica Neue, sans-serif",
+    letterSpacing: 1,
   },
   closeButton: {
     position: "absolute",
     top: 40,
     left: 20,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(255,255,255,0.1)",
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 1,
   },
   closeButtonText: {
-    color: "#fff",
+    color: "#FFFFFF",
     fontSize: 18,
   },
   imageContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 20,
+    marginBottom: 24,
   },
   upsellImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 10,
+    width: 160,
+    height: 160,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#D4AF37",
+  },
+  feature: {
+    fontSize: 22,
+    fontWeight: "500",
+    marginTop: 24,
+    marginBottom: 12,
+    color: "#D4AF37",
+  },
+  description: {
+    fontSize: 16,
+    marginBottom: 16,
+    lineHeight: 24,
+    color: "#E0E0E0",
+    fontFamily: "Helvetica Neue, sans-serif",
+  },
+  pricing: {
+    fontSize: 20,
+    fontWeight: "500",
+    marginTop: 32,
+    marginBottom: 24,
+    textAlign: "center",
+    color: "#FFFFFF",
+  },
+  upgradeButton: {
+    backgroundColor: "#D4AF37",
+    padding: 16,
+    borderRadius: 30,
+    alignItems: "center",
+    marginTop: 24,
+    shadowColor: "#D4AF37",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  upgradeButtonText: {
+    color: "#1A1A1A",
+    fontSize: 18,
+    fontWeight: "600",
+    letterSpacing: 0.5,
   },
   modalOverlay: {
     flex: 1,
@@ -260,6 +255,9 @@ const styles = StyleSheet.create({
   },
   enlargedImage: {
     width: "90%",
-    height: "90%",
+    height: "70%",
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: "#D4AF37",
   },
 });
