@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,15 +11,28 @@ import {
   Pressable,
   Platform,
   StatusBar,
+  ActivityIndicator,
+  Animated,
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
-import { useState } from "react";
-import { Animated } from "react-native";
+import Purchases, {
+  CustomerInfoUpdateListener,
+  PurchasesOfferings,
+  PurchasesPackage,
+} from "react-native-purchases";
 
-const AnimatedImage = ({ source, style, onPress }) => {
+const AnimatedImage = ({
+  source,
+  style,
+  onPress,
+}: {
+  source: any;
+  style: any;
+  onPress: any;
+}) => {
   const scaleValue = React.useRef(new Animated.Value(1)).current;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const pulseAnimation = Animated.sequence([
       Animated.timing(scaleValue, {
         toValue: 1.05,
@@ -70,16 +83,154 @@ export default function UpgradeScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [offerings, setOfferings] = useState<{
+    [key: string]: PurchasesOfferings;
+  } | null>(null);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isPro, setIsPro] = useState(false);
 
-  const openImage = (image) => {
+  useEffect(() => {
+    const fetchOfferings = async () => {
+      try {
+        const offeringsResponse = await Purchases.getOfferings();
+        console.log("All offerings:", offeringsResponse);
+        if (
+          offeringsResponse.all &&
+          Object.keys(offeringsResponse.all).length > 0
+        ) {
+          setOfferings(offeringsResponse.all);
+        }
+      } catch (error) {
+        console.error("Error fetching offerings:", error);
+      }
+    };
+
+    const checkSubscription = async () => {
+      try {
+        const purchaserInfo = await Purchases.getCustomerInfo();
+        console.log("Customer Info:", purchaserInfo);
+        const coutureEntitlement = purchaserInfo.entitlements.active.Couture;
+        setIsPro(!!coutureEntitlement);
+      } catch (error) {
+        console.error("Error checking subscription:", error);
+      }
+    };
+
+    fetchOfferings();
+    checkSubscription();
+
+    // Listen to purchase updates
+    const purchaserInfoUpdateListener = Purchases.addCustomerInfoUpdateListener(
+      (purchaserInfo) => {
+        const coutureEntitlement = purchaserInfo.entitlements.active.Couture;
+        setIsPro(!!coutureEntitlement);
+      }
+    );
+
+    return () => {
+      Purchases.removeCustomerInfoUpdateListener(
+        purchaserInfoUpdateListener as unknown as CustomerInfoUpdateListener
+      );
+    };
+  }, []);
+
+  const openImage = (image: any) => {
     setSelectedImage(image);
     setModalVisible(true);
   };
 
   const handleUpgrade = () => {
-    // Implement actual upgrade logic here
+    // Implement additional logic after successful purchase if needed
     console.log("Upgrade confirmed");
     router.back();
+  };
+
+  const handlePurchase = async (selectedPackage: PurchasesPackage) => {
+    setIsPurchasing(true);
+    try {
+      console.log("Starting purchase for package:", selectedPackage);
+      const { customerInfo } = await Purchases.purchasePackage(selectedPackage);
+      console.log("Purchase result:", JSON.stringify(customerInfo, null, 2));
+      const coutureEntitlement = customerInfo.entitlements.active.Couture;
+      if (coutureEntitlement) {
+        setIsPro(true);
+        console.log(
+          "Couture membership activated successfully:",
+          coutureEntitlement
+        );
+        alert("Congratulations! You are now a Couture member!");
+        handleUpgrade();
+      } else {
+        console.log("Purchase completed, but Couture entitlement not found.");
+        console.log(
+          "All entitlements:",
+          JSON.stringify(customerInfo.entitlements, null, 2)
+        );
+        alert(
+          "Purchase completed, but there was an issue activating Couture features. Please contact support."
+        );
+      }
+    } catch (e: any) {
+      console.error("Detailed purchase error:", JSON.stringify(e, null, 2));
+      if (!e.userCancelled) {
+        alert("There was an error processing your purchase. Please try again.");
+      }
+    } finally {
+      setIsPurchasing(false);
+      const updatedInfo = await Purchases.getCustomerInfo();
+      console.log(
+        "Updated Customer Info after purchase:",
+        JSON.stringify(updatedInfo, null, 2)
+      );
+    }
+  };
+
+  const restorePurchases = async () => {
+    try {
+      const restoredInfo = await Purchases.restorePurchases();
+      console.log("Restored purchases:", restoredInfo);
+    } catch (error) {
+      console.error("Error restoring purchases:", error);
+    }
+  };
+
+  const refreshCustomerInfo = async () => {
+    try {
+      const customerInfo = await Purchases.getCustomerInfo();
+      console.log(
+        "Refreshed Customer Info:",
+        JSON.stringify(customerInfo, null, 2)
+      );
+      const coutureEntitlement = customerInfo.entitlements.active.Couture;
+      setIsPro(!!coutureEntitlement);
+    } catch (error) {
+      console.error("Error refreshing customer info:", error);
+    }
+  };
+
+  const renderUpgradeButtons = () => {
+    if (!offerings) {
+      return <ActivityIndicator size="large" color="#D4AF37" />;
+    }
+
+    return Object.values(offerings).map((offering) =>
+      offering.availablePackages.map((pkg) => (
+        <TouchableOpacity
+          key={pkg.identifier}
+          style={styles.upgradeButton}
+          onPress={() => handlePurchase(pkg)}
+          disabled={isPurchasing || isPro}
+        >
+          <Text style={styles.upgradeButtonText}>
+            {isPro
+              ? "You're a Couture Member!"
+              : isPurchasing
+              ? "Processing..."
+              : `Upgrade to ${offering.identifier} for ${pkg.product.priceString}`}
+          </Text>
+        </TouchableOpacity>
+      ))
+    );
   };
 
   return (
@@ -129,11 +280,22 @@ export default function UpgradeScreen() {
             Unlock all Pro features for just $9.99/month
           </Text>
 
+          {renderUpgradeButtons()}
+
           <TouchableOpacity
-            style={styles.upgradeButton}
-            onPress={handleUpgrade}
+            onPress={restorePurchases}
+            style={styles.restoreButton}
           >
-            <Text style={styles.upgradeButtonText}>Upgrade to Fashion Pro</Text>
+            <Text style={styles.restoreButtonText}>Restore Purchases</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={refreshCustomerInfo}
+            style={styles.refreshButton}
+          >
+            <Text style={styles.refreshButtonText}>
+              Refresh Subscription Status
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
@@ -259,5 +421,48 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 3,
     borderColor: "#D4AF37",
+  },
+  proMemberText: {
+    fontSize: 20,
+    fontWeight: "500",
+    color: "#D4AF37",
+    textAlign: "center",
+    marginTop: 24,
+  },
+  restoreButton: {
+    backgroundColor: "#D4AF37",
+    padding: 16,
+    borderRadius: 30,
+    alignItems: "center",
+    marginTop: 24,
+    shadowColor: "#D4AF37",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  restoreButtonText: {
+    color: "#1A1A1A",
+    fontSize: 18,
+    fontWeight: "600",
+    letterSpacing: 0.5,
+  },
+  refreshButton: {
+    backgroundColor: "#D4AF37",
+    padding: 16,
+    borderRadius: 30,
+    alignItems: "center",
+    marginTop: 24,
+    shadowColor: "#D4AF37",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  refreshButtonText: {
+    color: "#1A1A1A",
+    fontSize: 18,
+    fontWeight: "600",
+    letterSpacing: 0.5,
   },
 });

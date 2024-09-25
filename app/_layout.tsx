@@ -31,6 +31,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     Purchases.configure({ apiKey: "goog_qlwflzLgzwgEBWHeUTuOaGZGRcN" });
+    Purchases.setLogLevel(Purchases.LOG_LEVEL.VERBOSE);
   }, []);
 
   if (!loaded) {

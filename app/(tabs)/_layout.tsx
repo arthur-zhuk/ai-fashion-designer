@@ -1,11 +1,13 @@
 import { Tabs, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, Text, Animated, Easing, View } from "react-native";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import Purchases from "react-native-purchases";
 
 export default function TabLayout() {
   const router = useRouter();
   const scaleValue = useRef(new Animated.Value(1)).current;
+  const [isPro, setIsPro] = useState(false);
 
   useEffect(() => {
     const pulseAnimation = Animated.sequence([
@@ -23,7 +25,20 @@ export default function TabLayout() {
       }),
     ]);
 
-    Animated.loop(pulseAnimation, { iterations: -1 }).start();
+    Animated.loop(pulseAnimation, { iterations: 15 }).start();
+
+    // Check subscription status
+    const checkSubscription = async () => {
+      try {
+        const purchaserInfo = await Purchases.getCustomerInfo();
+        const coutureEntitlement = purchaserInfo.entitlements.active.Couture;
+        setIsPro(!!coutureEntitlement);
+      } catch (error) {
+        console.error("Error checking subscription:", error);
+      }
+    };
+
+    checkSubscription();
   }, []);
 
   return (
@@ -37,37 +52,68 @@ export default function TabLayout() {
           ),
           headerRight: () => (
             <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
-              <TouchableOpacity
-                onPress={() => {
-                  router.push("/upgrade");
-                }}
-                style={{
-                  marginRight: 15,
-                  backgroundColor: "#FFD700",
-                  paddingHorizontal: 10,
-                  paddingVertical: 6,
-                  borderRadius: 20,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ fontSize: 18, marginRight: 4 }}>👗</Text>
-                <Text
+              {isPro ? (
+                <View
                   style={{
-                    color: "#000",
-                    fontWeight: "bold",
-                    fontSize: 14,
-                    marginLeft: 4,
+                    marginRight: 15,
+                    backgroundColor: "#FFD700",
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    borderRadius: 20,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                    flexDirection: "row",
+                    alignItems: "center",
                   }}
                 >
-                  Upgrade
-                </Text>
-              </TouchableOpacity>
+                  <Text style={{ fontSize: 18, marginRight: 4 }}>👑</Text>
+                  <Text
+                    style={{
+                      color: "#000",
+                      fontWeight: "bold",
+                      fontSize: 14,
+                      marginLeft: 4,
+                    }}
+                  >
+                    Pro User
+                  </Text>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => {
+                    router.push("/upgrade");
+                  }}
+                  style={{
+                    marginRight: 15,
+                    backgroundColor: "#FFD700",
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    borderRadius: 20,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ fontSize: 18, marginRight: 4 }}>👗</Text>
+                  <Text
+                    style={{
+                      color: "#000",
+                      fontWeight: "bold",
+                      fontSize: 14,
+                      marginLeft: 4,
+                    }}
+                  >
+                    Upgrade
+                  </Text>
+                </TouchableOpacity>
+              )}
             </Animated.View>
           ),
         }}

@@ -1,53 +1,47 @@
 import React from "react";
 import { TouchableOpacity, Text, ActivityIndicator } from "react-native";
 import styles from "./styles";
-import { useImageGenerator } from "@/hooks/useImageGenerator";
-import { useGarmentNameGenerator } from "@/hooks/useGarmentNameGenerator";
 
 interface GenerateButtonProps {
-  label?: string;
+  label: string;
   keywords: string[];
-  onGenerate?: (prompt: string) => void;
+  onGenerate: (prompt: string) => void;
+  isGenerating: boolean;
+  info: string;
 }
 
 export default function GenerateButton({
   label,
   keywords,
   onGenerate,
+  isGenerating,
+  info,
 }: GenerateButtonProps) {
-  const {
-    generateImage,
-    isImageLoading,
-    isPending: isGenerating,
-  } = useImageGenerator();
-  const {
-    mutation: generateGarmentName,
-    garmentName,
-    isGarmentNameLoading,
-  } = useGarmentNameGenerator();
-
-  const isLoading = isImageLoading || isGarmentNameLoading;
-  console.log({ isImageLoading, isGarmentNameLoading });
-
   const handlePress = () => {
-    const prompt = keywords.join(", ");
-    generateImage(prompt);
-    generateGarmentName.mutate(prompt);
-    onGenerate && onGenerate(prompt);
+    if (!isGenerating) {
+      const prompt = keywords.join(", ");
+      onGenerate(prompt);
+    }
   };
+
+  const buttonLabel = isGenerating ? info || "Generating..." : label;
 
   return (
     <TouchableOpacity
-      style={styles.generateButton}
+      style={[
+        styles.generateButton,
+        isGenerating && styles.generateButtonDisabled,
+      ]}
       onPress={handlePress}
       disabled={isGenerating}
     >
-      {isLoading || isGenerating ? (
-        <ActivityIndicator color="#ffffff" />
+      {isGenerating ? (
+        <>
+          <ActivityIndicator color="#ffffff" />
+          <Text style={styles.buttonText}>{buttonLabel}</Text>
+        </>
       ) : (
-        <Text style={styles.buttonText}>
-          {label || garmentName || "Generate"}
-        </Text>
+        <Text style={styles.buttonText}>{buttonLabel}</Text>
       )}
     </TouchableOpacity>
   );

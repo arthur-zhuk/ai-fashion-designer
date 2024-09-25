@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
-import { Purchases, Offerings, PurchasesError } from "react-native-purchases";
+import Purchases, {
+  PurchasesError,
+  PurchasesPackage,
+  PurchasesOfferings,
+} from "react-native-purchases";
 
 export const useRevenueCat = () => {
-  const [offerings, setOfferings] = useState<Offerings | null>(null);
+  const [offerings, setOfferings] = useState<PurchasesOfferings | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +22,7 @@ export const useRevenueCat = () => {
       });
   }, []);
 
-  const purchasePackage = async (pkg: Purchases.Package) => {
+  const purchasePackage = async (pkg: PurchasesPackage) => {
     try {
       const purchase = await Purchases.purchasePackage(pkg);
       return purchase;

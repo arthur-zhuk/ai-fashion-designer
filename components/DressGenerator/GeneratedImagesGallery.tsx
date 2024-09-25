@@ -40,7 +40,6 @@ const GeneratedImagesGallery: React.FC<GeneratedImagesGalleryProps> = ({}) => {
       <Text style={styles.sectionTitle}>Generated Images</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {generatedImages.map((url, index) => {
-          console.log(`Rendering image ${index}:`, url);
           return (
             <View key={index} style={styles.generatedImageContainer}>
               <TouchableOpacity onPress={() => openImage(url)}>

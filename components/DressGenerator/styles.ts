@@ -1,15 +1,17 @@
 import { Platform, StatusBar, StyleSheet } from "react-native";
 
 export default StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: "#1A1A1A",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   scrollView: {
+    flex: 1,
+  },
+  scrollViewContent: {
     flexGrow: 1,
     padding: 20,
-    paddingTop: 15,
+    paddingTop: 0, // Remove top padding
   },
   sectionTitle: {
     fontSize: 18,
@@ -22,9 +24,11 @@ export default StyleSheet.create({
   },
   styleList: {
     flexDirection: "row",
-    flexWrap: "wrap",
+    flexWrap: "nowrap",
     justifyContent: "flex-start",
+    alignItems: "center",
     marginBottom: 15,
+    paddingBottom: 5, // Add some padding at the bottom
   },
   keywordSection: {
     marginBottom: 20,
@@ -156,8 +160,6 @@ export default StyleSheet.create({
   // Description Styles
   descriptionContainer: {
     alignSelf: "flex-start",
-    marginTop: 25,
-    marginBottom: 25,
     width: "100%",
   },
   descriptionText: {
@@ -243,5 +245,8 @@ export default StyleSheet.create({
     fontSize: 16,
     fontFamily: "Helvetica Neue, sans-serif",
     marginLeft: 8,
+  },
+  generateButtonDisabled: {
+    opacity: 0.5,
   },
 });

@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, Image, ActivityIndicator } from "react-native";
-import { useQuery } from "@tanstack/react-query";
 import styles from "./styles";
 import { useGarmentNameGenerator } from "@/hooks/useGarmentNameGenerator";
 import { useImageGenerator } from "@/hooks/useImageGenerator";
@@ -27,13 +26,17 @@ const ImageDisplay: React.FC<ImageDisplayProps> = () => {
       ) : null}
 
       <View style={styles.imageContainer}>
-        <Image
-          source={{
-            uri: generatedImage,
-          }}
-          style={styles.image}
-          resizeMode="contain"
-        />
+        {generatedImage ? (
+          <Image
+            source={{
+              uri: generatedImage,
+            }}
+            style={styles.image}
+            resizeMode="contain"
+          />
+        ) : (
+          <Text style={styles.placeholderText}>No image generated yet</Text>
+        )}
       </View>
     </>
   );

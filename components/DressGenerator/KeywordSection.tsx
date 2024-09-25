@@ -27,83 +27,32 @@ export default function KeywordSection({
     }
   };
 
+  const renderKeywordSection = (title: string, keywordList: string[]) => (
+    <>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.styleList}
+      >
+        {keywordList.map((item) => (
+          <KeywordButton
+            key={item}
+            label={item}
+            onPress={toggleKeyword}
+            isSelected={keywords.includes(item)}
+          />
+        ))}
+      </ScrollView>
+    </>
+  );
+
   return (
     <View style={styles.keywordSection}>
-      <Text style={styles.sectionTitle}>Select Garment Style</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.styleList,
-          { paddingBottom: 0, height: 40 },
-        ]}
-      >
-        {GARMENT_STYLES.map((style) => (
-          <KeywordButton
-            key={style}
-            label={style}
-            onPress={toggleKeyword}
-            isSelected={keywords.includes(style)}
-          />
-        ))}
-      </ScrollView>
-
-      <Text style={styles.sectionTitle}>Select Colors</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.styleList,
-          { paddingBottom: 0, height: 40 },
-        ]}
-      >
-        {COLORS.map((color) => (
-          <KeywordButton
-            key={color}
-            label={color}
-            onPress={toggleKeyword}
-            isSelected={keywords.includes(color)}
-          />
-        ))}
-      </ScrollView>
-
-      <Text style={styles.sectionTitle}>Select Image Style</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.styleList,
-          { paddingBottom: 0, height: 40 },
-        ]}
-      >
-        {IMAGE_STYLES.map((style) => (
-          <KeywordButton
-            key={style}
-            label={style}
-            onPress={toggleKeyword}
-            isSelected={keywords.includes(style)}
-          />
-        ))}
-      </ScrollView>
-
-      <Text style={styles.sectionTitle}>Select Pattern</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.styleList,
-          { paddingBottom: 0, height: 40 },
-        ]}
-      >
-        {PATTERNS.map((pattern) => (
-          <KeywordButton
-            key={pattern}
-            label={pattern}
-            onPress={toggleKeyword}
-            isSelected={keywords.includes(pattern)}
-          />
-        ))}
-      </ScrollView>
+      {renderKeywordSection("Select Garment Style", GARMENT_STYLES)}
+      {renderKeywordSection("Select Colors", COLORS)}
+      {renderKeywordSection("Select Image Style", IMAGE_STYLES)}
+      {renderKeywordSection("Select Pattern", PATTERNS)}
 
       {/* Selected Keywords */}
       <View style={styles.selectedKeywordsContainer}>

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { usePredictionChecker } from "./usePredictionChecker";
+import Purchases from "react-native-purchases";
 
 const replicateToken = process.env.EXPO_PUBLIC_REPLICATE_API_TOKEN || "";
 
@@ -11,25 +12,47 @@ interface GenerateImageResult {
 
 export const useImageGenerator = () => {
   const [info, setInfo] = useState<string>("");
+  const [isProUser, setIsProUser] = useState(false);
   const queryClient = useQueryClient();
   const { checkPrediction } = usePredictionChecker(replicateToken);
+
+  // Remove this line as we'll use the query data instead
+  // const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkProStatus = async () => {
+      try {
+        const customerInfo = await Purchases.getCustomerInfo();
+        setIsProUser(customerInfo.entitlements.active["Couture"] !== undefined);
+      } catch (error) {
+        console.error("Error checking pro status:", error);
+        setIsProUser(false);
+      }
+    };
+
+    checkProStatus();
+  }, []);
 
   const generateImageMutation = useMutation<GenerateImageResult, Error, string>(
     {
       mutationFn: async (prompt: string): Promise<GenerateImageResult> => {
         setInfo("Starting image generation...");
 
-        const response = await fetch(
-          "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${replicateToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ input: { prompt } }),
-          }
-        );
+        // TODO: Uncomment this when we done with dev
+        // const modelEndpoint = isProUser
+        //   ? "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions"
+        //   : "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
+        const modelEndpoint =
+          "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
+
+        const response = await fetch(modelEndpoint, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${replicateToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ input: { prompt } }),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -94,8 +117,22 @@ export const useImageGenerator = () => {
     enabled: false,
   });
 
+  const clearImage = useCallback(() => {
+    queryClient.setQueryData(["generatedImage"], null);
+  }, [queryClient]);
+
+  const generateImage = useCallback(
+    async (prompt: string) => {
+      clearImage();
+      const result = await generateImageMutation.mutateAsync(prompt);
+      return result.imageUrl;
+    },
+    [clearImage, generateImageMutation]
+  );
+
   return {
-    generateImage: generateImageMutation.mutate,
+    generateImage,
+    clearImage,
     isImageLoading,
     isPending: generateImageMutation.isPending,
     info,
