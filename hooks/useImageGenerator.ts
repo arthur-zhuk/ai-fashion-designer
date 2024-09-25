@@ -3,7 +3,15 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { usePredictionChecker } from "./usePredictionChecker";
 import Purchases from "react-native-purchases";
 
-const replicateToken = process.env.EXPO_PUBLIC_REPLICATE_API_TOKEN || "";
+const replicateToken =
+  process.env?.EXPO_PUBLIC_REPLICATE_API_TOKEN ??
+  process.env?.REPLICATE_API_TOKEN ??
+  "";
+
+if (!replicateToken) {
+  console.error("Replicate API token is not set");
+  // You might want to throw an error here or handle it appropriately
+}
 
 interface GenerateImageResult {
   imageUrl: string;
@@ -39,11 +47,11 @@ export const useImageGenerator = () => {
         setInfo("Starting image generation...");
 
         // TODO: Uncomment this when we done with dev
-        // const modelEndpoint = isProUser
-        //   ? "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions"
-        //   : "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
-        const modelEndpoint =
-          "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
+        const modelEndpoint = isProUser
+          ? "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions"
+          : "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
+        // const modelEndpoint =
+        //   "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
 
         const response = await fetch(modelEndpoint, {
           method: "POST",

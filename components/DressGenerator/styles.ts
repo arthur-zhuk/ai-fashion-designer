@@ -31,12 +31,12 @@ export default StyleSheet.create({
     paddingBottom: 5, // Add some padding at the bottom
   },
   keywordSection: {
-    marginBottom: 20,
+    marginBottom: 5,
   },
   selectedKeywordsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginBottom: 15,
+    marginBottom: 5,
     marginTop: 10,
     alignSelf: "flex-start",
   },
@@ -59,8 +59,6 @@ export default StyleSheet.create({
     paddingHorizontal: 30,
     borderRadius: 25,
     alignItems: "center",
-    marginBottom: 25,
-    marginTop: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -97,7 +95,7 @@ export default StyleSheet.create({
     width: "100%",
     aspectRatio: 1,
     maxWidth: 500,
-    marginBottom: 30,
+    marginTop: 10,
     borderRadius: 20,
     overflow: "hidden",
     borderWidth: 1,
@@ -220,7 +218,7 @@ export default StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    marginBottom: 20,
+    marginBottom: 5,
     marginTop: 10,
   },
   pinterestButton: {
@@ -248,5 +246,20 @@ export default StyleSheet.create({
   },
   generateButtonDisabled: {
     opacity: 0.5,
+  },
+  placeHolderText: {
+    color: "#E0E0E0",
+    fontSize: 16,
+    marginTop: 10,
+    fontFamily: "Helvetica Neue, sans-serif",
+  },
+  garmentNameContainer: {
+    marginBottom: 10,
+  },
+  garmentNameText: {
+    color: "#E0E0E0",
+    fontSize: 20,
+    fontWeight: "600",
+    fontFamily: "Helvetica Neue, sans-serif",
   },
 });

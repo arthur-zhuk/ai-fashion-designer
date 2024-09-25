@@ -16,6 +16,7 @@ import styles from "./styles";
 import PinterestButton from "./PinterestButton";
 import Separator from "./Separator";
 import { useUserFriendlyDescription } from "@/hooks/useUserFriendlyDescription";
+import { useGarmentNameGenerator } from "@/hooks/useGarmentNameGenerator";
 
 export default function DressGenerator() {
   const [keywords, setKeywords] = useState<string[]>([]);
@@ -23,9 +24,10 @@ export default function DressGenerator() {
   const { generatedImage, info, error, isPending, generateImage } =
     useImageGenerator();
   const { description, generateDescription } = useUserFriendlyDescription();
+  const { garmentName, mutation: garmentNameMutation } =
+    useGarmentNameGenerator();
   const scrollViewRef = useRef<ScrollView>(null);
   const imageDisplayRef = useRef<View>(null);
-
   const scrollToImage = useCallback(() => {
     if (scrollViewRef.current && imageDisplayRef.current) {
       imageDisplayRef.current.measureLayout(
@@ -41,6 +43,7 @@ export default function DressGenerator() {
     async (prompt: string) => {
       setIsGenerating(true);
       generateDescription(prompt);
+      garmentNameMutation.mutate(prompt);
       try {
         const imageGenerated = await generateImage(prompt);
         if (imageGenerated) {
@@ -76,12 +79,12 @@ export default function DressGenerator() {
         {isPending && <ActivityIndicator size="large" color="#D4AF37" />}
         {generatedImage && (
           <View ref={imageDisplayRef}>
-            <ImageDisplay />
             {description && (
               <View style={styles.descriptionContainer}>
                 <Text style={styles.descriptionText}>{description}</Text>
               </View>
             )}
+            <ImageDisplay />
             <Separator />
             <UpgradeSection />
             <GenerateButton

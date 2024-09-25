@@ -18,6 +18,7 @@ import { useRouter, Stack } from "expo-router";
 import Purchases, {
   CustomerInfoUpdateListener,
   PurchasesOfferings,
+  PurchasesOffering,
   PurchasesPackage,
 } from "react-native-purchases";
 
@@ -84,8 +85,8 @@ export default function UpgradeScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [offerings, setOfferings] = useState<{
-    [key: string]: PurchasesOfferings;
-  } | null>(null);
+    [key: string]: PurchasesOffering;
+  }>({});
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isPro, setIsPro] = useState(false);
 
@@ -93,7 +94,6 @@ export default function UpgradeScreen() {
     const fetchOfferings = async () => {
       try {
         const offeringsResponse = await Purchases.getOfferings();
-        console.log("All offerings:", offeringsResponse);
         if (
           offeringsResponse.all &&
           Object.keys(offeringsResponse.all).length > 0
@@ -140,8 +140,6 @@ export default function UpgradeScreen() {
   };
 
   const handleUpgrade = () => {
-    // Implement additional logic after successful purchase if needed
-    console.log("Upgrade confirmed");
     router.back();
   };
 
@@ -276,13 +274,9 @@ export default function UpgradeScreen() {
             haute couture to street chic, available only to Pro users.
           </Text>
 
-          <Text style={styles.pricing}>
-            Unlock all Pro features for just $9.99/month
-          </Text>
-
           {renderUpgradeButtons()}
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={restorePurchases}
             style={styles.restoreButton}
           >
@@ -296,7 +290,7 @@ export default function UpgradeScreen() {
             <Text style={styles.refreshButtonText}>
               Refresh Subscription Status
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </ScrollView>
       </SafeAreaView>
       <Modal

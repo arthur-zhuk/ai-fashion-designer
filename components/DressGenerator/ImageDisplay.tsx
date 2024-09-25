@@ -3,6 +3,7 @@ import { View, Text, Image, ActivityIndicator } from "react-native";
 import styles from "./styles";
 import { useGarmentNameGenerator } from "@/hooks/useGarmentNameGenerator";
 import { useImageGenerator } from "@/hooks/useImageGenerator";
+import { useUserFriendlyDescription } from "@/hooks/useUserFriendlyDescription";
 
 interface ImageDisplayProps {}
 
@@ -35,7 +36,7 @@ const ImageDisplay: React.FC<ImageDisplayProps> = () => {
             resizeMode="contain"
           />
         ) : (
-          <Text style={styles.placeholderText}>No image generated yet</Text>
+          <Text style={styles.placeHolderText}>No image generated yet</Text>
         )}
       </View>
     </>
