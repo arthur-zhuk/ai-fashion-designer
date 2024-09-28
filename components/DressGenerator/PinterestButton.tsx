@@ -1,12 +1,15 @@
 import React from "react";
 import { TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import styles from "./styles";
 import { useImageGenerator } from "@/hooks/useImageGenerator";
 import { handleShareToPinterest } from "@/utils/shareImage";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { createStyles } from "./styles";
 
 export default function PinterestButton() {
   const { generatedImage } = useImageGenerator();
+  const { theme } = useThemeColor();
+  const styles = createStyles(theme);
 
   const shareDescription =
     "Generate your own fashion pieces here: https://example.com/app-download";

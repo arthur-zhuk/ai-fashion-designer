@@ -1,9 +1,10 @@
 import React from "react";
 import { View, Text, Image, ActivityIndicator } from "react-native";
-import styles from "./styles";
+
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { createStyles } from "./styles";
 import { useGarmentNameGenerator } from "@/hooks/useGarmentNameGenerator";
 import { useImageGenerator } from "@/hooks/useImageGenerator";
-import { useUserFriendlyDescription } from "@/hooks/useUserFriendlyDescription";
 
 interface ImageDisplayProps {}
 
@@ -15,6 +16,8 @@ const ImageDisplay: React.FC<ImageDisplayProps> = () => {
     isPending: isImageLoading,
   } = useImageGenerator();
   const { garmentName, isGarmentNameLoading } = useGarmentNameGenerator();
+  const { theme } = useThemeColor();
+  const styles = createStyles(theme);
 
   return (
     <>

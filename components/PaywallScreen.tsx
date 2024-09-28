@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { useRevenueCat } from "@/hooks/useRevenueCat";
 import { useRouter } from "expo-router";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { createStyles } from "./DressGenerator/styles";
 
 export default function PaywallScreen() {
   const { currentOffering, isLoading, error, purchasePackage } =
@@ -150,9 +152,11 @@ export default function PaywallScreen() {
   );
 }
 
+const { theme } = useThemeColor();
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.backgroundColor,
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
@@ -161,19 +165,20 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(255, 255, 255, 0.4)", // Changed from 0.6 to 0.4
-    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   darkOverlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.4)", // Changed from 0.6 to 0.4
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#1E0E3E",
-    textAlign: "center",
+    color: theme.textColor,
     marginBottom: 20,
+    textAlign: "center",
   },
   darkText: {
     color: "#F0F0F0",

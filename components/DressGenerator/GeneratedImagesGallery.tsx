@@ -10,12 +10,16 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useImageGenerator } from "@/hooks/useImageGenerator";
-import styles from "./styles";
 import { useSaveImage } from "@/hooks/useSaveImage";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { createStyles } from "./styles";
 
 interface GeneratedImagesGalleryProps {}
 
 const GeneratedImagesGallery: React.FC<GeneratedImagesGalleryProps> = ({}) => {
+  const { theme } = useThemeColor();
+  const styles = createStyles(theme);
+
   const { generatedImages } = useImageGenerator();
   const saveImage = useSaveImage();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);

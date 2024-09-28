@@ -1,7 +1,6 @@
 import React from "react";
 import { Text, ScrollView, View, TouchableOpacity } from "react-native";
-
-import styles from "./styles";
+import { createStyles } from "./styles";
 import {
   COLORS,
   GARMENT_STYLES,
@@ -9,6 +8,7 @@ import {
   PATTERNS,
 } from "@/constants/KeywordButtonKeywords";
 import KeywordButton from "./KeywordButton";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 interface KeywordSectionProps {
   keywords: string[];
@@ -19,6 +19,9 @@ export default function KeywordSection({
   keywords,
   setKeywords,
 }: KeywordSectionProps) {
+  const { theme } = useThemeColor();
+  const styles = createStyles(theme);
+
   const toggleKeyword = (keyword: string) => {
     if (keywords.includes(keyword)) {
       setKeywords(keywords.filter((k) => k !== keyword));

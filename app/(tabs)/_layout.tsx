@@ -9,6 +9,7 @@ import {
   Platform,
 } from "react-native";
 import React, { useRef, useEffect, useState } from "react";
+import { Colors } from "@/constants/Colors";
 
 // Import Purchases conditionally
 let Purchases: any;
@@ -64,7 +65,13 @@ export default function TabLayout() {
   }, []);
 
   return (
-    <Tabs screenOptions={{ tabBarStyle: { display: "none" } }}>
+    <Tabs
+      screenOptions={{
+        tabBarStyle: { display: "none" },
+        headerStyle: { backgroundColor: Colors.light.background },
+        headerTintColor: Colors.light.text,
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -78,7 +85,7 @@ export default function TabLayout() {
                 <View
                   style={{
                     marginRight: 15,
-                    backgroundColor: "#FFD700",
+                    backgroundColor: Colors.light.secondary,
                     paddingHorizontal: 10,
                     paddingVertical: 6,
                     borderRadius: 20,
@@ -94,7 +101,7 @@ export default function TabLayout() {
                   <Text style={{ fontSize: 18, marginRight: 4 }}>👑</Text>
                   <Text
                     style={{
-                      color: "#000",
+                      color: Colors.light.background,
                       fontWeight: "bold",
                       fontSize: 14,
                       marginLeft: 4,
@@ -110,7 +117,7 @@ export default function TabLayout() {
                   }}
                   style={{
                     marginRight: 15,
-                    backgroundColor: "#FFD700",
+                    backgroundColor: Colors.light.primary,
                     paddingHorizontal: 10,
                     paddingVertical: 6,
                     borderRadius: 20,
@@ -126,7 +133,7 @@ export default function TabLayout() {
                   <Text style={{ fontSize: 18, marginRight: 4 }}>👗</Text>
                   <Text
                     style={{
-                      color: "#000",
+                      color: Colors.light.background,
                       fontWeight: "bold",
                       fontSize: 14,
                       marginLeft: 4,

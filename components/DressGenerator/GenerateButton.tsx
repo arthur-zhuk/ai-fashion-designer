@@ -1,6 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Text, ActivityIndicator } from "react-native";
-import styles from "./styles";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { createStyles } from "./styles";
 
 interface GenerateButtonProps {
   label: string;
@@ -17,6 +18,9 @@ export default function GenerateButton({
   isGenerating,
   info,
 }: GenerateButtonProps) {
+  const { theme } = useThemeColor();
+  const styles = createStyles(theme);
+
   const handlePress = () => {
     if (!isGenerating) {
       const prompt = keywords.join(", ");

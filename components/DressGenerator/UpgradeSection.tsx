@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import styles from "./styles";
 import { useRouter } from "expo-router";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { createStyles } from "./styles";
 import Purchases from "react-native-purchases";
 
 interface UpgradeSectionProps {}
 
 const UpgradeSection: React.FC<UpgradeSectionProps> = () => {
+  const { theme } = useThemeColor();
+  const styles = createStyles(theme);
   const router = useRouter();
   const [isProUser, setIsProUser] = useState(false);
 
