@@ -1,11 +1,5 @@
 import { useState } from "react";
-import OpenAI from "openai";
-
-const openAiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
-const openai = new OpenAI({
-  apiKey: openAiKey,
-  dangerouslyAllowBrowser: true,
-});
+import { openai } from "../utils/openai";
 
 export const useUserFriendlyDescription = () => {
   const [description, setDescription] = useState<string>("");
