@@ -1,8 +1,30 @@
 import { Tabs, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity, Text, Animated, Easing, View } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  Animated,
+  Easing,
+  View,
+  Platform,
+} from "react-native";
 import React, { useRef, useEffect, useState } from "react";
-import Purchases from "react-native-purchases";
+
+// Import Purchases conditionally
+let Purchases: any;
+if (Platform.OS !== "web") {
+  Purchases = require("react-native-purchases").default;
+}
+
+// Mock Purchases object for web
+const mockPurchases = {
+  getCustomerInfo: async () => ({
+    entitlements: { active: { Couture: false } },
+  }),
+};
+
+// Use the appropriate Purchases object based on the platform
+const PurchasesManager = Platform.OS === "web" ? mockPurchases : Purchases;
 
 export default function TabLayout() {
   const router = useRouter();
@@ -30,7 +52,7 @@ export default function TabLayout() {
     // Check subscription status
     const checkSubscription = async () => {
       try {
-        const purchaserInfo = await Purchases.getCustomerInfo();
+        const purchaserInfo = await PurchasesManager.getCustomerInfo();
         const coutureEntitlement = purchaserInfo.entitlements.active.Couture;
         setIsPro(!!coutureEntitlement);
       } catch (error) {

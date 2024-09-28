@@ -5,4 +5,5 @@ export const openai = new OpenAI({
     process.env?.EXPO_PUBLIC_OPENAI_API_KEY ??
     process.env?.OPENAI_API_KEY ??
     "",
+  dangerouslyAllowBrowser: true,
 });

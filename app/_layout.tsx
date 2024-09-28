@@ -10,6 +10,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Purchases from "react-native-purchases";
+import { Platform } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,8 +31,10 @@ export default function RootLayout() {
   }, [loaded]);
 
   useEffect(() => {
-    Purchases.configure({ apiKey: "goog_qlwflzLgzwgEBWHeUTuOaGZGRcN" });
-    Purchases.setLogLevel(Purchases.LOG_LEVEL.VERBOSE);
+    if (Platform.OS !== "web") {
+      Purchases.configure({ apiKey: "goog_qlwflzLgzwgEBWHeUTuOaGZGRcN" });
+      Purchases.setLogLevel(Purchases.LOG_LEVEL.VERBOSE);
+    }
   }, []);
 
   if (!loaded) {

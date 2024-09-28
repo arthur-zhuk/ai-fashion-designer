@@ -15,12 +15,47 @@ import {
   Animated,
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
-import Purchases, {
-  CustomerInfoUpdateListener,
-  PurchasesOfferings,
-  PurchasesOffering,
-  PurchasesPackage,
-} from "react-native-purchases";
+import { PurchasesOffering } from "react-native-purchases";
+
+// Import Purchases conditionally
+let Purchases: any;
+if (Platform.OS !== "web") {
+  Purchases = require("react-native-purchases").default;
+}
+
+// Mock Purchases object for web
+const mockPurchases = {
+  getOfferings: async () => ({
+    all: {
+      pro: {
+        identifier: "pro",
+        availablePackages: [
+          {
+            identifier: "monthly",
+            product: { priceString: "$9.99/month" },
+          },
+          {
+            identifier: "yearly",
+            product: { priceString: "$99.99/year" },
+          },
+        ],
+      },
+    },
+  }),
+  getCustomerInfo: async () => ({
+    entitlements: { active: { Couture: false } },
+  }),
+  addCustomerInfoUpdateListener: () => {},
+  removeCustomerInfoUpdateListener: () => {},
+  purchasePackage: async () => {
+    // Simulate a successful purchase
+    return { customerInfo: { entitlements: { active: { Couture: true } } } };
+  },
+  restorePurchases: async () => ({}),
+};
+
+// Use the appropriate Purchases object based on the platform
+const PurchasesManager = Platform.OS === "web" ? mockPurchases : Purchases;
 
 const AnimatedImage = ({
   source,
@@ -93,7 +128,7 @@ export default function UpgradeScreen() {
   useEffect(() => {
     const fetchOfferings = async () => {
       try {
-        const offeringsResponse = await Purchases.getOfferings();
+        const offeringsResponse = await PurchasesManager.getOfferings();
         if (
           offeringsResponse.all &&
           Object.keys(offeringsResponse.all).length > 0
@@ -107,7 +142,7 @@ export default function UpgradeScreen() {
 
     const checkSubscription = async () => {
       try {
-        const purchaserInfo = await Purchases.getCustomerInfo();
+        const purchaserInfo = await PurchasesManager.getCustomerInfo();
         console.log("Customer Info:", purchaserInfo);
         const coutureEntitlement = purchaserInfo.entitlements.active.Couture;
         setIsPro(!!coutureEntitlement);
@@ -120,17 +155,18 @@ export default function UpgradeScreen() {
     checkSubscription();
 
     // Listen to purchase updates
-    const purchaserInfoUpdateListener = Purchases.addCustomerInfoUpdateListener(
-      (purchaserInfo) => {
+    const purchaserInfoUpdateListener =
+      PurchasesManager.addCustomerInfoUpdateListener((purchaserInfo: any) => {
         const coutureEntitlement = purchaserInfo.entitlements.active.Couture;
         setIsPro(!!coutureEntitlement);
-      }
-    );
+      });
 
     return () => {
-      Purchases.removeCustomerInfoUpdateListener(
-        purchaserInfoUpdateListener as unknown as CustomerInfoUpdateListener
-      );
+      if (Platform.OS !== "web") {
+        PurchasesManager.removeCustomerInfoUpdateListener(
+          purchaserInfoUpdateListener
+        );
+      }
     };
   }, []);
 
@@ -143,11 +179,13 @@ export default function UpgradeScreen() {
     router.back();
   };
 
-  const handlePurchase = async (selectedPackage: PurchasesPackage) => {
+  const handlePurchase = async (selectedPackage: any) => {
     setIsPurchasing(true);
     try {
       console.log("Starting purchase for package:", selectedPackage);
-      const { customerInfo } = await Purchases.purchasePackage(selectedPackage);
+      const { customerInfo } = await PurchasesManager.purchasePackage(
+        selectedPackage
+      );
       console.log("Purchase result:", JSON.stringify(customerInfo, null, 2));
       const coutureEntitlement = customerInfo.entitlements.active.Couture;
       if (coutureEntitlement) {
@@ -175,7 +213,7 @@ export default function UpgradeScreen() {
       }
     } finally {
       setIsPurchasing(false);
-      const updatedInfo = await Purchases.getCustomerInfo();
+      const updatedInfo = await PurchasesManager.getCustomerInfo();
       console.log(
         "Updated Customer Info after purchase:",
         JSON.stringify(updatedInfo, null, 2)
@@ -185,7 +223,7 @@ export default function UpgradeScreen() {
 
   const restorePurchases = async () => {
     try {
-      const restoredInfo = await Purchases.restorePurchases();
+      const restoredInfo = await PurchasesManager.restorePurchases();
       console.log("Restored purchases:", restoredInfo);
     } catch (error) {
       console.error("Error restoring purchases:", error);
@@ -194,7 +232,7 @@ export default function UpgradeScreen() {
 
   const refreshCustomerInfo = async () => {
     try {
-      const customerInfo = await Purchases.getCustomerInfo();
+      const customerInfo = await PurchasesManager.getCustomerInfo();
       console.log(
         "Refreshed Customer Info:",
         JSON.stringify(customerInfo, null, 2)

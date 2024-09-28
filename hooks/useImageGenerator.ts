@@ -1,17 +1,22 @@
 import { useState, useCallback, useEffect } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { usePredictionChecker } from "./usePredictionChecker";
-import Purchases from "react-native-purchases";
+import { Platform } from "react-native";
 
-const replicateToken =
-  process.env?.EXPO_PUBLIC_REPLICATE_API_TOKEN ??
-  process.env?.REPLICATE_API_TOKEN ??
-  "";
-
-if (!replicateToken) {
-  console.error("Replicate API token is not set");
-  // You might want to throw an error here or handle it appropriately
+// Import Purchases conditionally
+let Purchases: any;
+if (Platform.OS !== "web") {
+  Purchases = require("react-native-purchases").default;
 }
+
+// Mock Purchases object for web
+const mockPurchases = {
+  getCustomerInfo: async () => ({
+    entitlements: { active: { Couture: false } },
+  }),
+};
+
+// Use the appropriate Purchases object based on the platform
+const PurchasesManager = Platform.OS === "web" ? mockPurchases : Purchases;
 
 interface GenerateImageResult {
   imageUrl: string;
@@ -22,15 +27,16 @@ export const useImageGenerator = () => {
   const [info, setInfo] = useState<string>("");
   const [isProUser, setIsProUser] = useState(false);
   const queryClient = useQueryClient();
-  const { checkPrediction } = usePredictionChecker(replicateToken);
 
-  // Remove this line as we'll use the query data instead
-  // const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const isDevelopment = process.env.NODE_ENV === "development";
+  const API_URL = isDevelopment
+    ? "http://localhost:3000/api/generate-image"
+    : "https://your-production-api-url.com/api/generate-image";
 
   useEffect(() => {
     const checkProStatus = async () => {
       try {
-        const customerInfo = await Purchases.getCustomerInfo();
+        const customerInfo = await PurchasesManager.getCustomerInfo();
         setIsProUser(customerInfo.entitlements.active["Couture"] !== undefined);
       } catch (error) {
         console.error("Error checking pro status:", error);
@@ -46,20 +52,20 @@ export const useImageGenerator = () => {
       mutationFn: async (prompt: string): Promise<GenerateImageResult> => {
         setInfo("Starting image generation...");
 
-        // TODO: Uncomment this when we done with dev
-        // const modelEndpoint = isProUser
-        //   ? "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions"
-        //   : "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
-        const modelEndpoint =
-          "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions";
-
-        const response = await fetch(modelEndpoint, {
+        const response = await fetch(API_URL, {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${replicateToken}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ input: { prompt } }),
+          body: JSON.stringify({
+            prompt,
+            isProUser,
+            go_fast: true,
+            num_outputs: 1,
+            aspect_ratio: "1:1",
+            output_format: "webp",
+            output_quality: 80,
+          }),
         });
 
         if (!response.ok) {
@@ -67,43 +73,30 @@ export const useImageGenerator = () => {
         }
 
         const data = await response.json();
-        const predictionId = data.id;
-        setInfo("Image is being generated...");
 
-        // Poll for prediction status
-        return new Promise((resolve, reject) => {
-          const pollInterval = setInterval(async () => {
-            try {
-              const prediction = await checkPrediction(predictionId);
-              if (prediction.status === "succeeded") {
-                const outputUrl = Array.isArray(prediction.output)
-                  ? prediction.output[0]
-                  : prediction.output;
-                setInfo("Image generation complete.");
-                clearInterval(pollInterval);
-                resolve({
-                  imageUrl: outputUrl,
-                  info: "Image generation complete.",
-                });
-              } else if (prediction.status === "failed") {
-                setInfo("Image generation failed.");
-                clearInterval(pollInterval);
-                reject(new Error("Image generation failed"));
-              } else {
-                setInfo(`Image generation status: ${prediction.status}`);
-              }
-            } catch (pollError) {
-              console.error("Error polling prediction status:", pollError);
-              setInfo("Error checking image status.");
-              clearInterval(pollInterval);
-              reject(pollError);
-            }
-          }, 2000); // Poll every 2 seconds
-        });
-      },
-      onError: (error) => {
-        console.error("Error generating image:", error);
-        setInfo("Error generating image.");
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        let imageUrl;
+        if (data.imageUrl) {
+          imageUrl = data.imageUrl;
+        } else if (
+          data.output &&
+          Array.isArray(data.output) &&
+          data.output.length > 0
+        ) {
+          imageUrl = data.output[0];
+        } else {
+          throw new Error("No image URL received from the server");
+        }
+
+        setInfo("Image generation complete.");
+
+        return {
+          imageUrl,
+          info: "Image generation complete.",
+        };
       },
       onSuccess: (data) => {
         queryClient.setQueryData(["generatedImage"], data.imageUrl);
@@ -111,6 +104,10 @@ export const useImageGenerator = () => {
           ["generatedImages"],
           (oldImages = []) => [...oldImages, data.imageUrl]
         );
+      },
+      onError: (error) => {
+        console.error("Error generating image:", error);
+        setInfo("Error generating image.");
       },
     }
   );
