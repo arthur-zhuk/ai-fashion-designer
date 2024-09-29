@@ -62,19 +62,16 @@ export default function DressGenerator() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.themeToggleButton} onPress={toggleTheme}>
+        <Text style={[styles.themeToggleText, { color: theme.textColor }]}>
+          {themeType === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+        </Text>
+      </TouchableOpacity>
       <View style={styles.innerContainer}>
         <StatusBar
           barStyle={themeType === "dark" ? "light-content" : "dark-content"}
           backgroundColor={theme.backgroundColor}
         />
-        <TouchableOpacity
-          style={styles.themeToggleButton}
-          onPress={toggleTheme}
-        >
-          <Text style={[styles.themeToggleText, { color: theme.textColor }]}>
-            {themeType === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
-          </Text>
-        </TouchableOpacity>
         <ScrollView
           ref={scrollViewRef}
           contentContainerStyle={styles.scrollViewContent}

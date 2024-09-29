@@ -57,8 +57,8 @@ export const createStyles = (theme: Theme) =>
       textShadowRadius: 2,
       ...(isDesktop && {
         fontSize: 24,
-        marginTop: 40,
-        marginBottom: 20,
+        marginTop: 10,
+        marginBottom: 5,
       }),
     },
     styleList: {
@@ -69,7 +69,7 @@ export const createStyles = (theme: Theme) =>
       marginBottom: 15,
       paddingBottom: 5,
       ...(isDesktop && {
-        marginBottom: 30,
+        marginBottom: 10,
         overflowX: "auto",
         width: "100%",
       }),
@@ -87,8 +87,8 @@ export const createStyles = (theme: Theme) =>
       marginTop: 10,
       alignSelf: "flex-start",
       ...(isDesktop && {
-        marginTop: 20,
-        marginBottom: 20,
+        marginTop: 6,
+        marginBottom: 6,
       }),
     },
     selectedKeyword: {
@@ -129,8 +129,8 @@ export const createStyles = (theme: Theme) =>
     },
     buttonText: {
       color: theme.buttonTextColor,
-      fontWeight: "600",
       fontSize: 16,
+      fontWeight: "600",
       fontFamily: "Helvetica Neue, sans-serif",
       letterSpacing: 0.5,
     },
@@ -268,7 +268,7 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: 10,
       ...(isDesktop && {
         marginTop: 30,
-        marginBottom: 30,
+        marginBottom: 10,
       }),
     },
     upgradeSection: {
@@ -383,23 +383,25 @@ export const createStyles = (theme: Theme) =>
       color: theme.textColor,
     },
     button: {
-      marginRight: 8,
-      marginBottom: 8,
-      borderRadius: 20,
+      marginRight: 10,
+      marginBottom: 10,
+      borderRadius: 20, // Increased from 15
       overflow: "hidden",
+    },
+    buttonGradient: {
+      paddingHorizontal: 16, // Increased from 12
+      paddingVertical: 10, // Increased from 8
+    },
+    buttonText: {
+      color: theme.textColor,
+      fontSize: 16, // Increased from 14
+      fontWeight: "bold",
     },
     selectedButton: {
       // You can add any additional styles for selected state here
       // For example, you might want to add a border:
       borderWidth: 2,
       borderColor: theme.accentColor,
-    },
-    buttonGradient: {
-      paddingVertical: 10,
-      paddingHorizontal: 16,
-      justifyContent: "center",
-      alignItems: "center",
-      minHeight: 40,
     },
     selectedButtonText: {
       color: theme.accentColor,

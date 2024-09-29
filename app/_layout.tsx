@@ -10,7 +10,6 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Purchases from "react-native-purchases";
-import { Analytics } from "@vercel/analytics/react";
 import { Platform } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -45,7 +44,6 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Analytics />
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
