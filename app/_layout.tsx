@@ -32,7 +32,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (Platform.OS !== "web") {
-      Purchases.configure({ apiKey: "goog_qlwflzLgzwgEBWHeUTuOaGZGRcN" });
+      Purchases.configure({ apiKey: "" });
       Purchases.setLogLevel(Purchases.LOG_LEVEL.VERBOSE);
     }
   }, []);
